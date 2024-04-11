@@ -14,6 +14,8 @@ class Character():
     def get_stamina(self):
         return self.stamina
     
+    # Reduce the characters stamina; If the characters stamina drops below 5, halve the characters strength, rounding up to the nearest integer.\
+    # If the characters stamina is reduced to zero or less, the character lies down and takes a nap.
     def reduce_stamina(self, increment=1):
         if increment < self.stamina:
             self.stamina -= increment
@@ -34,9 +36,17 @@ def start_game():
         print("Enter the players strength (we recommend 10 or less):")
         strength = int(input())
         players.append(Character(name, stamina, strength))
+    print("\nPress enter to continue")
+    input()
 
     return players
 
+
+##
+# General game logic: players take turns swinging at each other (perhaps later implementing an alternative shielding action).
+# 9 of 10 swings hit. If a swing hits, there's a 20% chance of a 'critical hit' that knocks out the hit player. If the swing
+# doesn't crit, there's a 50% chance the hit character has their stamina reduced. The character that swung always has their stmina reduced.
+##
 
 def main_loop(players):
     two_players = True
@@ -46,16 +56,16 @@ def main_loop(players):
         # The current combatant swings
         print(f"{combatants[current_combatant].name} swings!")
 
-        if (random() < 0.9):        # A hit!
+        if (random() <= 0.9):        # A hit!
             print("And hits!")
-            if(random() < .02):     # Critical hit! Uh oh!
+            if(random() < .02):     # Critical hit!
                 combatants[current_combatant - 1].is_conscious = False
                 print(f"Uh oh, {combatants[current_combatant].name} accidently knocked out {combatants[current_combatant - 1].name}!")
             else:
                 if (random() < 0.5):
-                    combatants[current_combatant].reduce_stamina()
+                    combatants[current_combatant-1].reduce_stamina(ceil(.1 * combatants[current_combatant].strength))
         combatants[current_combatant].reduce_stamina()      # The player that swung gets tired!
-        current_combatant = (current_combatant + 1) % 2
+        current_combatant = (current_combatant + 1) % 2     # Switch the current combatant
 
         # Check for unconscious player(s)
         for player in combatants:
@@ -66,6 +76,10 @@ def main_loop(players):
         input()
     
     print("The players are all tired out!")
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -85,3 +99,24 @@ if __name__ == "__main__":
             else:
                 print("I'm sorry, that wasn't a valid answer, try again!")
 
+
+
+
+### Reference
+""" import time
+import os
+
+# Print some information
+print("Welcome to the game!")
+
+# Wait for 5 seconds
+time.sleep(5)
+
+# Clear the command line
+os.system('cls' if os.name == 'nt' else 'clear')
+
+# Print an input prompt
+user_input = input("Enter your name: ")
+
+# Print the user's input
+print("Hello, " + user_input + "!")  """           
